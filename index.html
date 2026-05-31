@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VOLTX — Circuit Equation Solver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="page">
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="logo">
+    <svg class="logo-bolt" viewBox="0 0 24 24"><path d="M13 2L4.09 12.97H11L10 22l9.91-10.97H14L13 2z"/></svg>
+    VOLTX
+  </div>
+  <div class="nav-pills">
+    <button class="nav-pill active" id="nav-kcl" onclick="setLaw('KCL')">KCL</button>
+    <button class="nav-pill" id="nav-kvl" onclick="setLaw('KVL')">KVL</button>
+  </div>
+</header>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div>
+    <div class="hero-title">
+      CIRCUIT<br><span class="glow">SOLVER</span>
+    </div>
+    <div class="hero-sub">Kirchhoff's Laws · Matrix Method · Precision Analysis</div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-val">KCL</span>
+      <span class="stat-lbl">ΣI = 0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">KVL</span>
+      <span class="stat-lbl">ΣV = 0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">[Z][I]</span>
+      <span class="stat-lbl">Matrix</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MAIN SOLVER ─── -->
+<main class="solver-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label">Select Law</div>
+
+    <div class="law-card active" id="kcl-card" onclick="setLaw('KCL')">
+      <div class="law-name">
+        <span>Kirchhoff's</span>
+        <span class="law-abbr">KCL</span>
+      </div>
+      <div class="law-desc">Current Law — sum of currents at any node equals zero</div>
+      <div class="law-formula">ΣI_in = ΣI_out</div>
+    </div>
+
+    <div class="law-card kvl-card" id="kvl-card" onclick="setLaw('KVL')">
+      <div class="law-name">
+        <span>Kirchhoff's</span>
+        <span class="law-abbr">KVL</span>
+      </div>
+      <div class="law-desc">Voltage Law — sum of voltage drops around any loop equals zero</div>
+      <div class="law-formula">ΣV = 0</div>
+    </div>
+
+    <div class="sidebar-label" style="margin-top:8px">Solving Method</div>
+    <div class="method-group">
+      <div class="method-option active" id="m-standard" onclick="setMethod('standard')">
+        <div class="method-radio"></div>
+        <div class="method-text">
+          <div class="method-name">STANDARD</div>
+          <div class="method-hint">Algebraic equations</div>
+        </div>
+      </div>
+      <div class="method-option" id="m-matrix" onclick="setMethod('matrix')">
+        <div class="method-radio"></div>
+        <div class="method-text">
+          <div class="method-name">MATRIX</div>
+          <div class="method-hint">Nodal / mesh matrix [G][V]=[I]</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN PANEL -->
+  <div class="main-panel">
+
+    <!-- INPUT CARD -->
+    <div class="panel-card">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-title" id="panel-title">KCL Problem Input</div>
+        <div style="margin-left:auto;font-size:10px;font-family:var(--mono);color:var(--text3)">VOLTX ENGINE v2</div>
+      </div>
+      <div class="panel-body">
+
+        <!-- Input mode tabs -->
+        <div class="input-tabs">
+          <button class="input-tab active" id="tab-text-btn" onclick="setInputTab('text')">TEXT INPUT</button>
+          <button class="input-tab" id="tab-file-btn" onclick="setInputTab('file')">FILE UPLOAD</button>
+        </div>
+
+        <!-- Text input -->
+        <textarea class="problem-textarea" id="problem-input"
+          placeholder="Describe your KCL circuit problem..."></textarea>
+
+        <!-- File upload -->
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" accept=".pdf,image/jpeg,image/png,image/jpg" id="file-input" onchange="handleFile(event)"/>
+          <svg class="upload-icon" viewBox="0 0 40 40" fill="none">
+            <rect x="4" y="8" width="32" height="26" rx="4" stroke="rgba(0,229,255,0.5)" stroke-width="1.5"/>
+            <path d="M14 22l6-6 6 6" stroke="rgba(0,229,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="20" y1="16" x2="20" y2="28" stroke="rgba(0,229,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M12 36h16" stroke="rgba(0,229,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div class="upload-title">Drop your circuit file here</div>
+          <div class="upload-sub">Supports .PDF · .JPG · .PNG — circuit diagrams or problem sheets</div>
+          <div class="upload-name" id="file-name"></div>
+        </div>
+
+        <!-- Example chips (populated by solver.js) -->
+        <div class="examples-row" id="examples-row">
+          <span class="sidebar-label" style="width:100%;margin-bottom:0">Quick Examples:</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SOLVE BUTTON -->
+    <button class="solve-btn" id="solve-btn" onclick="solve()">⚡ SOLVE</button>
+
+    <!-- RESULT CARD -->
+    <div class="panel-card result-panel" id="result-panel">
+      <div class="result-topbar">
+        <span class="result-badge" id="result-badge">KCL</span>
+        <span class="result-method-tag" id="result-method-tag">STANDARD METHOD</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <div style="width:6px;height:6px;border-radius:50%;background:#00e5ff;box-shadow:0 0 6px #00e5ff;animation:pulse 1.5s infinite"></div>
+          <span style="font-size:10px;color:var(--text3);font-family:var(--mono)">SOLUTION COMPLETE</span>
+        </div>
+      </div>
+      <div class="result-body-wrap">
+        <div class="result-text" id="result-text"></div>
+      </div>
+    </div>
+
+  </div><!-- /main-panel -->
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-logo">VOLTX</div>
+  <div class="footer-txt">Kirchhoff's Current &amp; Voltage Law Solver · Matrix Analysis</div>
+  <div class="footer-txt">© 2025 VOLTX</div>
+</footer>
+
+</div><!-- /page -->
+
+<!-- JS: api.js must load before solver.js -->
+<script src="api.js"></script>
+<script src="solver.js"></script>
+</body>
+</html>
