@@ -1,22 +1,3 @@
-/**
- * ============================================================
- *  VOLTX — Circuit Equation Solver
- *  Project Requirements & Configuration File
- *  Version: 1.0.0
- * ============================================================
- *
- *  VOLTX is an AI-powered web application for solving electrical
- *  circuit problems using Kirchhoff's Current Law (KCL) and
- *  Kirchhoff's Voltage Law (KVL), with both Standard algebraic
- *  and Matrix-based (Nodal/Mesh Analysis) solving methods.
- *
- * ============================================================
- */
-
-
-
-
-
 const VOLTX_META = {
   name: "VOLTX",
   version: "1.0.0",
@@ -29,18 +10,8 @@ const VOLTX_META = {
   entryPoint: "voltx.html",
 };
 
-
-
-
-
-
 const VOLTX_FEATURES = {
 
-  /**
-   * LAW SELECTOR
-   * User must be able to toggle between two electrical laws.
-   * Each law has its own formula, description, and solving logic.
-   */
   lawSelector: {
     required: true,
     options: ["KCL", "KVL"],
@@ -59,11 +30,6 @@ const VOLTX_FEATURES = {
     },
   },
 
-  /**
-   * SOLVING METHOD SELECTOR
-   * User must be able to choose between Standard algebraic
-   * solving and Matrix-based solving.
-   */
   methodSelector: {
     required: true,
     options: ["standard", "matrix"],
@@ -129,10 +95,6 @@ const VOLTX_FEATURES = {
     },
   },
 
-  /**
-   * INPUT MODES
-   * User can submit circuit problems in multiple formats.
-   */
   inputModes: {
     required: true,
     modes: ["text", "file"],
@@ -170,10 +132,6 @@ const VOLTX_FEATURES = {
     },
   },
 
-  /**
-   * SOLUTION OUTPUT
-   * Requirements for how solutions must be displayed.
-   */
   solutionOutput: {
     required: true,
     format: "plain text (monospace font, no markdown symbols)",
@@ -199,12 +157,6 @@ const VOLTX_FEATURES = {
 
 
 const VOLTX_AI_ENGINE = {
-  /**
-   * NOTE: The AI engine is internal and transparent to the user.
-   * Users interact with VOLTX as a circuit solver — the AI
-   * layer is an implementation detail, not a user-visible feature.
-   */
-
   provider: "Anthropic",
   apiEndpoint: "https:
   model: "claude-sonnet-4-20250514",
@@ -475,27 +427,6 @@ const VOLTX_NON_FUNCTIONAL_REQUIREMENTS = [
 
 const VOLTX_MATRIX_REFERENCE = {
 
-  /**
-   * NODAL ANALYSIS (for KCL)
-   *
-   * Given a circuit with n nodes (including ground/reference):
-   *
-   *   Step 1: Label nodes V1, V2, ... V(n-1). Ground = 0V.
-   *   Step 2: For each non-reference node, apply KCL:
-   *           Sum of currents leaving node = Sum of source currents entering node
-   *   Step 3: Express each branch current as (Vi - Vj) / Rij
-   *   Step 4: Rearrange into matrix form [G][V] = [I]
-   *
-   *   Conductance matrix G:
-   *     G[i][i] = sum of all conductances connected to node i
-   *     G[i][j] = -conductance between node i and node j  (i ≠ j)
-   *
-   *   Example (2-node circuit):
-   *   | G11  G12 | | V1 |   | I1 |
-   *   | G21  G22 | | V2 | = | I2 |
-   *
-   *   Solve: [V] = [G]^(-1) × [I]
-   */
   nodalAnalysis: {
     law: "KCL",
     matrixForm: "[G][V] = [I]",
@@ -503,29 +434,6 @@ const VOLTX_MATRIX_REFERENCE = {
     solve: "Gaussian elimination or [G]^(-1) multiplication",
   },
 
-  /**
-   * MESH ANALYSIS (for KVL)
-   *
-   * Given a circuit with m independent meshes:
-   *
-   *   Step 1: Assign mesh currents I1, I2, ... Im (clockwise convention).
-   *   Step 2: For each mesh, apply KVL:
-   *           Sum of voltage rises = Sum of voltage drops
-   *   Step 3: Express each voltage drop as R × (mesh current terms)
-   *   Step 4: Rearrange into matrix form [Z][I] = [V]
-   *
-   *   Impedance matrix Z:
-   *     Z[i][i] = sum of all resistances in mesh i
-   *     Z[i][j] = -resistance shared between mesh i and mesh j  (i ≠ j)
-   *
-   *   Example (2-mesh circuit):
-   *   | Z11  Z12 | | I1 |   | V1 |
-   *   | Z21  Z22 | | I2 | = | V2 |
-   *
-   *   Solve: [I] = [Z]^(-1) × [V]   or Cramer's Rule:
-   *     I1 = det([V|Z_col2]) / det(Z)
-   *     I2 = det([Z_col1|V]) / det(Z)
-   */
   meshAnalysis: {
     law: "KVL",
     matrixForm: "[Z][I] = [V]",
@@ -533,15 +441,6 @@ const VOLTX_MATRIX_REFERENCE = {
     solve: "Cramer's Rule or [Z]^(-1) multiplication",
   },
 
-  /**
-   * 2×2 Matrix Inversion Formula (reference)
-   *   | a  b |^(-1)     1     |  d  -b |
-   *   | c  d |      = ───── × | -c   a |
-   *                   ad-bc
-   *
-   * Determinant: det = ad - bc
-   * If det = 0, the system has no unique solution (dependent equations).
-   */
   matrixInversion2x2: {
     formula: "A^(-1) = (1/det(A)) × adj(A)",
     determinant: "det = a*d - b*c",
